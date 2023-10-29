@@ -1,6 +1,12 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpXsrfTokenExtractor } from '@angular/common/http';
 
+export interface User {
+  username: string;
+  details: string;
+  roles: string;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,17 +19,30 @@ export class AppComponent {
   userinfo01 = '';
   csrfToken: string = '';
   token: string = '';
+  isAuthenticated: boolean = false;
+  user: User = { username: '', details: '', roles: '' };
 
   constructor(
     private httpClient: HttpClient,
     private tokenExtractor: HttpXsrfTokenExtractor
   ) {
     this.token = this.tokenExtractor.getToken() as string;
+    this.httpClient.get<User>('/me', { withCredentials: true }).subscribe({
+      next: (response: User) => {
+        this.user = response;
+        if (response.username != 'ANONYMOUS') {
+          this.isAuthenticated = true;
+        } else {
+          this.isAuthenticated = false;
+        }
+      },
+
+      error: (error) => console.info(error),
+      complete: () => console.info('complete'),
+    });
   }
 
-  ngOninit(): void {
-    console.info('ngOnInit');
-  }
+  ngOninit(): void {}
 
   button01() {
     this.httpClient
@@ -37,7 +56,7 @@ export class AppComponent {
 
   button02() {
     this.httpClient
-      .post<any>('/resource1', 'Willy & Belen De Keyser', {
+      .post<any>('/resource1', this.user.username, {
         responseType: 'text' as 'json',
         withCredentials: true,
       })
@@ -60,9 +79,5 @@ export class AppComponent {
 
   login() {
     window.location.href = '/oauth2/authorization/gateway';
-  }
-
-  logout() {
-    window.location.href = '/logout';
   }
 }

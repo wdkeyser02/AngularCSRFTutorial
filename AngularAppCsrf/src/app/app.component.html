@@ -1,15 +1,16 @@
 <h1>Spring Boot Tutorial</h1>
-<button (click)="login()">Login</button>
-<button (click)="logout()">Logout</button><br /><br />
-<form method="post" action="/logout">
+<h3 *ngIf="isAuthenticated">Welcome {{ user.username }},</h3>
+<h3 *ngIf="isAuthenticated">Roles: {{ user.roles }}</h3>
+<button *ngIf="!isAuthenticated" (click)="login()">Login</button>
+<form *ngIf="isAuthenticated" method="post" action="/logout">
   <input type="hidden" name="_csrf" value="{{ token }}" />
   <input type="submit" value="Logout" />
 </form>
-
+<br /><br />
 <button (click)="button01()">Call Resource Server 01</button><br /><br />
-<h1>Message from Resource Server 01: {{ message01 }}</h1>
+<h1>Message from Get Resource Server: {{ message01 }}</h1>
 <button (click)="button02()">Call Resource Server 02</button><br /><br />
-<h1>Message from Resource Server 02: {{ message02 }}</h1>
+<h1>Message from Post Resource Server: {{ message02 }}</h1>
 <button (click)="userinfo()">User Info</button><br /><br />
 <h1>User info: {{ userinfo01 }}</h1>
 
