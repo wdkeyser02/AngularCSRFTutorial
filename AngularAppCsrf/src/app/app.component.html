@@ -1,17 +1,31 @@
 <h1>Spring Boot Tutorial</h1>
-<h3 *ngIf="isAuthenticated">Welcome {{ user.username }},</h3>
-<h3 *ngIf="isAuthenticated">Roles: {{ user.roles }}</h3>
+<h3 *ngIf="isAuthenticated">
+  Welcome {{ user.username }}, Roles: {{ user.roles }}
+</h3>
 <button *ngIf="!isAuthenticated" (click)="login()">Login</button>
 <form *ngIf="isAuthenticated" method="post" action="/logout">
   <input type="hidden" name="_csrf" value="{{ token }}" />
   <input type="submit" value="Logout" />
 </form>
-<br /><br />
-<button (click)="button01()">Call Resource Server 01</button><br /><br />
-<h1>Message from Get Resource Server: {{ message01 }}</h1>
-<button (click)="button02()">Call Resource Server 02</button><br /><br />
-<h1>Message from Post Resource Server: {{ message02 }}</h1>
-<button (click)="userinfo()">User Info</button><br /><br />
-<h1>User info: {{ userinfo01 }}</h1>
+<br />
+<div class="text">
+  <button (click)="button01()">GET Resource Server 01</button>
+  <h3>Message from Get Resource Server: {{ message01 }}</h3>
+</div>
+<div class="text">
+  <button (click)="button02()">POST Resource Server 01</button>
+  <h3>Message from Post Resource Server: {{ message02 }}</h3>
+</div>
+<div class="text">
+  <button (click)="userinfo()">User Info</button><br />
+  <h3>User info: {{ userinfo01 }}</h3>
+</div>
+<h3 *ngIf="isAuthenticated">List:</h3>
+<button *ngIf="isAuthenticated" (click)="getTestList()">Get string</button>
+<button *ngIf="isAuthenticated" (click)="postTestList()">Send string</button
+><br />
+<ul *ngFor="let test of testList">
+  <li>{{ test }}</li>
+</ul>
 
 <router-outlet></router-outlet>

@@ -21,6 +21,7 @@ export class AppComponent {
   token: string = '';
   isAuthenticated: boolean = false;
   user: User = { username: '', details: '', roles: '' };
+  testList: string[] = [];
 
   constructor(
     private httpClient: HttpClient,
@@ -36,17 +37,14 @@ export class AppComponent {
           this.isAuthenticated = false;
         }
       },
-
       error: (error) => console.info(error),
       complete: () => console.info('complete'),
     });
   }
 
-  ngOninit(): void {}
-
   button01() {
     this.httpClient
-      .get('/resource1', { responseType: 'text', withCredentials: true })
+      .get('/resource1/home', { responseType: 'text', withCredentials: true })
       .subscribe({
         next: (response) => (this.message01 = response),
         error: (error) => (this.message01 = 'Error'),
@@ -56,7 +54,7 @@ export class AppComponent {
 
   button02() {
     this.httpClient
-      .post<any>('/resource1', this.user.username, {
+      .post<any>('/resource1/home', this.user.username, {
         responseType: 'text' as 'json',
         withCredentials: true,
       })
@@ -79,5 +77,48 @@ export class AppComponent {
 
   login() {
     window.location.href = '/oauth2/authorization/gateway';
+  }
+
+  getTestList() {
+    if (this.isAuthenticated) {
+      this.httpClient
+        .get<any>('/resource1/test', { withCredentials: true })
+        .subscribe({
+          next: (response) => {
+            this.testList = response;
+          },
+          error: (error) => console.info(error),
+          complete: () => console.info('complete'),
+        });
+    }
+  }
+
+  postTestList() {
+    if (this.isAuthenticated) {
+      this.httpClient
+        .post<any>(
+          '/resource1/test',
+          this.user.username + ' ' + this.randomString(),
+          {
+            withCredentials: true,
+          }
+        )
+        .subscribe({
+          next: (response) => {
+            this.testList = response;
+          },
+          error: (error) => console.info(error),
+          complete: () => console.info('complete'),
+        });
+    }
+  }
+
+  randomString() {
+    const length = 10;
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var result = '';
+    for (var i = length; i > 0; --i)
+      result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
   }
 }
