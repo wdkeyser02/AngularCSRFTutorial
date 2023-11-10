@@ -60,10 +60,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "AngularAppCsrf:build:production"
+              "buildTarget": "AngularAppCsrf:build:production"
             },
             "development": {
-              "browserTarget": "AngularAppCsrf:build:development"
+              "buildTarget": "AngularAppCsrf:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -71,7 +71,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "AngularAppCsrf:build"
+            "buildTarget": "AngularAppCsrf:build"
           }
         },
         "test": {
