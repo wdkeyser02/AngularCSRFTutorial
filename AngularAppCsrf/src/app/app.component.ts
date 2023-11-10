@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpXsrfTokenExtractor } from '@angular/common/http';
 
 export interface User {
@@ -12,7 +12,7 @@ export interface User {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Spring Boot Tutorial!';
   message01 = 'Api has not been called yet';
   message02 = 'Api has not been called yet';
@@ -20,13 +20,37 @@ export class AppComponent {
   csrfToken: string = '';
   token: string = '';
   isAuthenticated: boolean = false;
-  user: User = { username: '', details: '', roles: '' };
+  user: User = {
+    username: 'ANONYMOUS',
+    details: '',
+    roles: '',
+  };
   testList: string[] = [];
 
   constructor(
     private httpClient: HttpClient,
     private tokenExtractor: HttpXsrfTokenExtractor
   ) {
+    this.refresh();
+    setInterval(() => {
+      console.info('setInterval() getTestList');
+      this.getTestList();
+    }, 60000);
+    setInterval(() => {
+      console.info('setInterval() userinfo');
+      this.userinfo();
+    }, 120000);
+    setInterval(() => {
+      console.info('setInterval() logout');
+      this.logout();
+    }, 3600000);
+  }
+
+  ngOnInit() {
+    console.info('Oninit');
+  }
+
+  refresh() {
     this.token = this.tokenExtractor.getToken() as string;
     this.httpClient.get<User>('/me', { withCredentials: true }).subscribe({
       next: (response: User) => {
@@ -38,7 +62,6 @@ export class AppComponent {
         }
       },
       error: (error) => console.info(error),
-      complete: () => console.info('complete'),
     });
   }
 
@@ -76,7 +99,9 @@ export class AppComponent {
   }
 
   login() {
-    window.location.href = '/oauth2/authorization/gateway';
+    if (!this.isAuthenticated) {
+      window.location.href = '/oauth2/authorization/gateway';
+    }
   }
 
   getTestList() {
@@ -120,5 +145,22 @@ export class AppComponent {
     for (var i = length; i > 0; --i)
       result += chars[Math.floor(Math.random() * chars.length)];
     return result;
+  }
+
+  logout() {
+    this.refresh();
+    if (this.isAuthenticated) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/logout';
+      const hiddenField = document.createElement('input');
+      hiddenField.type = 'hidden';
+      hiddenField.name = '_csrf';
+      hiddenField.value = this.token;
+      form.appendChild(hiddenField);
+      document.body.appendChild(form);
+      form.submit();
+      this.isAuthenticated = false;
+    }
   }
 }
